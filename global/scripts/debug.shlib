@@ -1,0 +1,415 @@
+#!/bin/echo This script should not run directly:
+
+# Description:
+#
+#   Function for printing debugging information on caught errors.
+#   It makes use of error trapping. 
+#
+#   Default behavior is that error trapping is enabled, 
+#   and the script exits upon trapped error with the same status as the failed command.
+#   
+#   To disable error trapping altogether run `debug_disable_trap`
+#      (Note that if `set -e` is set in the calling script, the script would still exit upon error 
+#       through that mechanism).
+#   To disable exit upon trapped error run `debug_disable_exit`
+#       In this case (trap doesn't exit), execution proceeds to the next line of the script, 
+#       with `$?` still set to whatever value the failed command errored with.
+#
+# Input:
+#
+#   $1 - line number
+#   $2 - command ran
+#   $3 - exit status
+
+debug_on_error()
+{
+    if [[ "$HCP_DEBUG_USETRAP" == "ON" ]]; then
+
+        local me=$(basename "$0")
+        local startreport=""
+        local endreport=""
+        #instead of trying to detect things that would make eval do bad things, manually detect and replace simple variable expansion via string patterns
+        local expandedcmd=$(debug_fake_eval_echo "$2")
+        local command="'"$(debug_first $expandedcmd)"'"
+        #for subshells, say something smarter than "'(' command failed"
+        if [[ "$command" == "'('" ]]
+        then
+            #say "subshell command failed", without quotes around subshell
+            command=subshell
+        fi
+
+        # --- output a regular HCP error log
+
+        log_Err "$command command failed with return code: $3"
+
+        # --- are we printing in color
+
+        if [[ "$HCP_DEBUG_COLOR" == "TRUE" ]]; then
+           startreport="\033[33m"
+           endreport="\033[0m"
+        fi
+        
+        (
+            # --- output a detailed report if usetrap is not turned off
+            echo
+            echo -e "${startreport}===> ERROR: Command returned with nonzero exit code"
+            echo "---------------------------------------------------"
+            echo "         script: $me"
+            echo "stopped at line: $1"
+            echo "           call: $2"
+            echo "  expanded call: $expandedcmd"
+            echo "       hostname: $(hostname)"
+            echo "      exit code: $3"
+            echo -e "---------------------------------------------------${endreport}"
+            echo
+        ) 1>&2
+        
+        
+        if [[ "$HCP_DEBUG_EXIT_ON_ERROR" == "ON" ]]; then
+
+            # --- Check if interactive shell
+            if [[ "$-" == *i* ]]; then
+                (
+                    echo
+                    echo -n "execution paused due to error, press enter to continue or ctrl+c to halt..."
+                ) 1>&2
+                read
+            else
+                (
+                    debug_red_echo "===> Aborting execution!"
+                    echo ""
+                ) 1>&2
+                exit $3
+            fi
+        fi
+    fi
+}
+
+function debug_fake_eval_echo()
+{
+    #manually parse and replace simple variable expressions, so we don't have to blacklist everything that breaks eval
+    #for our usage, the only input is the entire command as a string, so if someone forgets to use quotes, put it all back into one string
+    local origcmd="$*"
+    #split at $ character
+    local -a dollararray
+    #quirk: <<<"" adds a newline to the end, and read -d '' with unusual IFS keeps it on the last element
+    #we want to reach "end of file", so ignore the exit status of read -d ''
+    IFS='$' read -r -d '' -a dollararray <<<"$origcmd" || true
+    #copy stuff before the first $ verbatim
+    local returnval="${dollararray[0]}"
+    for ((i = 1; i < ${#dollararray[@]}; ++i))
+    do
+        local tempstr="${dollararray[i]}"
+        local brace=0
+        if [[ "$tempstr" == \{* ]]
+        then
+            #add the braces back to the code if the "variable name" is bogus
+            brace=1
+            #another open brace should be rare (we can leave it unexpanded), so just find the first closing brace, let the "variable defined" test sort out the rest
+            #NOTE: this leaves a { in the varname temporarily
+            local varname=${tempstr%%\}*}
+            local remainder=${tempstr:${#varname}}
+            #and strip the closing brace from the remainder
+            remainder=${remainder#\}}
+            #now that we have the remainder separated, clean up the {
+            varname=${varname#\{}
+        else
+            #emulate "$11" being interpreted as "${1}1"
+            if [[ "$tempstr" =~ ^[0-9] ]]
+            then
+                #take the first character
+                local varname=${tempstr:0:1}
+                local remainder=${tempstr:1}
+            else
+                local varname=$(echo "$tempstr" | sed 's/\([a-zA-Z_][a-zA-Z0-9_]*\).*$/\1/')
+                local remainder=${tempstr:${#varname}}
+            fi
+        fi
+        #old mac bash doesn't have test -v, so use an indirect variable construct
+        #but it doesn't like when the name is invalid, so we have to manually check that
+        #$1, etc have changed since the context of the command, so DON'T expand them
+        #the "+1" returns 1 if the variable is set, and empty string if it is unset
+        if [[ "$varname" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ && "${!varname+1}" != "" ]]
+        then
+            #success, substitute in the value
+            returnval+="${!varname}$remainder"
+        else
+            #failure, put the $ and "variable name" back
+            if ((brace))
+            then
+                returnval+="\${$varname}$remainder"
+            else
+                returnval+="\$$varname$remainder"
+            fi
+        fi
+    done
+    #quirk: use the extra newline from read -d '' <<<"", rather than having echo add one
+    #bash strips multiple newlines from $() anyway, so generally doesn't matter
+    echo -n "$returnval"
+}
+
+function debug_first()
+{
+    echo "$1"
+}
+
+debug_defaults()
+{
+    debug_enable_trap
+    debug_enable_exit
+    #the ${<var>:-} pattern exists to work properly under set -eu, mac's old bash doesn't have [[ -v <var> ]]
+    if [[ "${HCP_DEBUG_COLOR:-}" == "" ]]
+    then
+        debug_disable_color
+    fi
+    if [[ "${HCP_VERBOSE:-}" == "" ]]
+    then
+        debug_disable_verbose
+    fi
+}
+
+# Description:
+#
+#   Function to turn on error trapping
+
+debug_enable_trap()
+{
+    HCP_DEBUG_USETRAP=ON
+    #enable trap ... ERR in functions
+    set -E
+    #if we will exit on error, are noninteractive, and have set -u, also enable -e
+    if [[ "${HCP_DEBUG_EXIT_ON_ERROR:-}" == "ON" && "$-" != *i* && "$-" == *u* ]]
+    then
+        set -e
+    fi
+}
+
+# Description:
+#
+#   Function to turn off error trapping
+
+debug_disable_trap()
+{
+    HCP_DEBUG_USETRAP=OFF
+    #have debug_disable_* turn off shell error exit too
+    set +eE
+}
+
+# Description:
+#
+#   Function to turn on exit upon error trap
+
+debug_enable_exit()
+{
+    HCP_DEBUG_EXIT_ON_ERROR=ON
+    #if we will exit on error, are noninteractive, and have set -u, also enable -e
+    if [[ "${HCP_DEBUG_USETRAP:-}" == "ON" && "$-" != *i* && "$-" == *u* ]]
+    then
+        set -e
+    fi
+}
+
+# Description:
+#
+#   Function to turn off exit upon error trap
+
+debug_disable_exit()
+{
+    HCP_DEBUG_EXIT_ON_ERROR=OFF
+    #have debug_disable_* turn off shell error exit too
+    set +e
+}
+
+# == Color printing functionality
+
+# Description:
+#
+#   Function to turn on output coloring
+
+debug_enable_color()
+{
+    HCP_DEBUG_COLOR=TRUE
+}
+
+
+# Description:
+#
+#   Function to turn off output coloring
+
+debug_disable_color()
+{
+    HCP_DEBUG_COLOR=FALSE
+}
+
+
+# Description:
+#
+#   Function for printing red debug output.
+#
+# Input:
+#
+#   - text to be printed
+
+debug_red_echo()
+{   
+    if [ "$HCP_DEBUG_COLOR" == "TRUE" ] ; then
+        echo -e "\033[31m$*\033[0m"
+    else
+        echo "$*"
+    fi
+}
+
+
+# Description:
+#
+#   Function for printing green debug output.
+#
+# Input:
+#
+#   - text to be printed
+
+debug_green_echo()
+{   
+    if [ "$HCP_DEBUG_COLOR" == "TRUE" ] ; then
+        echo -e "\033[32m$*\033[0m"
+    else
+        echo "$*"
+    fi
+}
+
+
+# Description:
+#
+#   Function for printing blue debug output.
+#
+# Input:
+#
+#   - text to be printed
+
+debug_blue_echo()
+{   
+    if [ "$HCP_DEBUG_COLOR" == "TRUE" ] ; then
+        echo -e "\033[34m$*\033[0m"
+    else
+        echo "$*"
+    fi
+}
+
+
+# ============ VERBOSE functionality ==============
+
+
+# Description:
+#
+#   Function to turn on verbose reporting
+
+debug_enable_verbose()
+{
+    HCP_VERBOSE=TRUE
+}
+
+
+# Description:
+#
+#   Function to turn off verbose reporting
+
+debug_disable_verbose()
+{
+    HCP_VERBOSE=FALSE
+}
+
+
+# Description:
+#
+#   Function for printing red verbose output.
+#
+# Input:
+#
+#   - text to be printed
+
+verbose_red_echo()
+{   
+    if [ "$HCP_VERBOSE" == "TRUE" ] ; then
+        debug_red_echo "$*"
+    fi
+}
+
+
+# Description:
+#
+#   Function for printing green verbose output.
+#
+# Input:
+#
+#   - text to be printed
+
+verbose_green_echo()
+{   
+    if [ "$HCP_VERBOSE" == "TRUE" ] ; then
+        debug_green_echo "$*"
+    fi
+}
+
+
+# Description:
+#
+#   Function for printing blue verbose output.
+#
+# Input:
+#
+#   - text to be printed
+
+verbose_blue_echo()
+{   
+    if [ "$HCP_VERBOSE" == "TRUE" ] ; then
+        debug_blue_echo "$*"
+    fi
+}
+
+
+# Description:
+#
+#   Function for printing verbose output.
+#
+# Input:
+#
+#   - text to be printed
+
+verbose_echo()
+{   
+    if [ "$HCP_VERBOSE" == "TRUE" ] ; then
+        echo "$*"
+    fi
+}
+
+# == End of functions
+
+#if interactive, always disable set -e for convenience
+if [[ "$-" == *i* ]]
+then
+    #interactive
+    set +e
+fi
+
+# == Logging functionality
+
+if [[ "$(type -t log_Err)" != "function" ]]
+then
+    source "${HCPPIPEDIR}/global/scripts/log.shlib" "$@"
+fi
+
+# == Sanity checking
+
+#note: 'set -u' complaints will not call 'trap ... ERR', but will do a 'set -e' exit
+#if we don't have -u but we do have -e, we are in an unintended state
+#but until a disable function is called, it is harmless (and interactive will already have disabled -e), so only warn
+#except, 'trap ... ERR' by default doesn't get inherited by functions except with the errtrace shopt
+#for now, just disable the warning, until we have time for testing
+#if [[ "$-" != *u* && "$-" == *e* ]]
+#then
+#    log_Warn "this script is using debug.shlib, but also specifies 'set -e', which is redundant (when set -u isn't used)"
+#fi
+
+debug_defaults
+
+trap 'debug_on_error "$LINENO" "$BASH_COMMAND" "$?"' ERR

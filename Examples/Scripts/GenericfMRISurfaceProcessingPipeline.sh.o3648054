@@ -1,0 +1,70 @@
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: arguments: --path=/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data --subject=100307 --fmriname=rfMRI_REST1_RL --lowresmesh=32 --fmrires=2 --smoothingFWHM=2 --grayordinatesres=2 --regname=MSMSulc
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Path: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Subject: 100307
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: NameOffMRI: rfMRI_REST1_RL
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: LowResMesh: 32
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: FinalfMRIResolution: 2
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: SmoothingFWHM: 2
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: GrayordinatesResolution: 2
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: RegName: MSMSulc
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: QCMode: YES
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: doGoodVoxels: YES
+========================================
+  DIRECTORY: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+    PRODUCT: HCP Pipeline Scripts
+    VERSION: v5.0.0-MOD
+     COMMIT: HEAD
+   MODIFIED: YES
+========================================
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: FSLDIR: /home/hanwang/fsl
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Platform Information Follows: 
+Linux LX00048620 6.8.0-57-generic #59~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Mar 19 17:07:41 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Make fMRI Ribbon
+Wed Apr 16 21:03:34 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: mkdir -p /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/RibbonVolumeToSurfaceMapping
+Wed Apr 16 21:03:34 BST 2025:RibbonVolumeToSurfaceMapping.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:03:34 BST 2025:RibbonVolumeToSurfaceMapping.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:03:34 BST 2025:RibbonVolumeToSurfaceMapping.sh: START
+0.380330
+0.991018
+.8008530
+1.1811830
+Wed Apr 16 21:12:29 BST 2025:RibbonVolumeToSurfaceMapping.sh: END
+Wed Apr 16 21:12:29 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Surface Smoothing
+Wed Apr 16 21:12:29 BST 2025:SurfaceSmoothing.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:12:29 BST 2025:SurfaceSmoothing.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:12:29 BST 2025:SurfaceSmoothing.sh: START
+Wed Apr 16 21:12:47 BST 2025:SurfaceSmoothing.sh: END
+Wed Apr 16 21:12:47 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Subcortical Processing
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: START
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: AtlasSpaceFolder: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: ROIFolder: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/ROIs
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: FinalfMRIResolution: 2
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: ResultsFolder: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: NameOffMRI: rfMRI_REST1_RL
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: SmoothingFWHM: 2
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: BrainOrdinatesResolution: 2
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: VolumefMRI: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: Sigma: .84932180028801904272
+Wed Apr 16 21:12:47 BST 2025:SubcorticalProcessing.sh: Creating subject-roi subcortical cifti at same resolution as output
+Wed Apr 16 21:12:58 BST 2025:SubcorticalProcessing.sh: Dilating out zeros
+Wed Apr 16 21:13:02 BST 2025:SubcorticalProcessing.sh: Generate atlas subcortical template cifti
+Wed Apr 16 21:13:03 BST 2025:SubcorticalProcessing.sh: Smoothing and resampling
+Wed Apr 16 21:18:33 BST 2025:SubcorticalProcessing.sh: END
+Wed Apr 16 21:18:33 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Generation of Dense Timeseries
+Wed Apr 16 21:18:33 BST 2025:CreateDenseTimeseries.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:18:33 BST 2025:CreateDenseTimeseries.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:18:33 BST 2025:CreateDenseTimeseries.sh: START
+Wed Apr 16 21:18:49 BST 2025:CreateDenseTimeseries.sh: END
+Wed Apr 16 21:18:49 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Generating fMRI QC scene and snapshots
+Wed Apr 16 21:18:49 BST 2025:GenerateFMRIScenes.sh: arguments: --study-folder=/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data --subject=100307 --fmriname=rfMRI_REST1_RL --output-folder=/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/fMRIQC
+Wed Apr 16 21:18:49 BST 2025:GenerateFMRIScenes.sh: StudyFolder: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data
+Wed Apr 16 21:18:49 BST 2025:GenerateFMRIScenes.sh: Subject: 100307
+Wed Apr 16 21:18:49 BST 2025:GenerateFMRIScenes.sh: fMRIName: rfMRI_REST1_RL
+Wed Apr 16 21:18:49 BST 2025:GenerateFMRIScenes.sh: OutputSceneFolder: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/fMRIQC
+Wed Apr 16 21:18:49 BST 2025:GenerateFMRIScenes.sh: verboseArg: false
+Wed Apr 16 21:19:03 BST 2025:GenerateFMRIScenes.sh: fMRI QC scene generation completed
+Wed Apr 16 21:19:03 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Completed!

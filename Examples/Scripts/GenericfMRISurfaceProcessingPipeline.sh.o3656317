@@ -1,0 +1,32 @@
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: arguments: --path=/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data --subject=100307 --fmriname=tfMRI_LANGUAGE_RL --lowresmesh=32 --fmrires=2 --smoothingFWHM=2 --grayordinatesres=2 --regname=MSMSulc
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Path: /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Subject: 100307
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: NameOffMRI: tfMRI_LANGUAGE_RL
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: LowResMesh: 32
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: FinalfMRIResolution: 2
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: SmoothingFWHM: 2
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: GrayordinatesResolution: 2
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: RegName: MSMSulc
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: QCMode: YES
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: doGoodVoxels: YES
+========================================
+  DIRECTORY: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+    PRODUCT: HCP Pipeline Scripts
+    VERSION: v5.0.0-MOD
+     COMMIT: HEAD
+   MODIFIED: YES
+========================================
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: FSLDIR: /home/hanwang/fsl
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Platform Information Follows: 
+Linux LX00048620 6.8.0-57-generic #59~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Mar 19 17:07:41 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: Make fMRI Ribbon
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: mkdir -p /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/RibbonVolumeToSurfaceMapping
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: HCPPIPEDIR: /home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: CARET7DIR: /opt/workbench/bin_linux64
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: START
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: While running '/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/scripts/RibbonVolumeToSurfaceMapping.sh /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/RibbonVolumeToSurfaceMapping /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/tfMRI_LANGUAGE_RL 100307 /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/fsaverage_LR32k 32 /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Native MSMSulc YES':
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: ERROR: '/opt/workbench/bin_linux64/wb_command' command failed with return code: 255
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: While running '/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/GenericfMRISurfaceProcessingPipeline.sh --path=/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data --subject=100307 --fmriname=tfMRI_LANGUAGE_RL --lowresmesh=32 --fmrires=2 --smoothingFWHM=2 --grayordinatesres=2 --regname=MSMSulc':
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: ERROR: '"/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/scripts"/RibbonVolumeToSurfaceMapping.sh' command failed with return code: 255

@@ -1,0 +1,41 @@
+fatal: bad revision 'HEAD'
+fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+fatal: Needed a single revision
+
+While running:
+/opt/workbench/bin_linux64/../exe_linux64/wb_command -create-signed-distance-volume /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Native/100307.L.white.native.surf.gii /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/tfMRI_LANGUAGE_RL_SBRef.nii.gz /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/RibbonVolumeToSurfaceMapping/100307.L.white.native.nii.gz
+
+ERROR: failed to open compressed file '/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/tfMRI_LANGUAGE_RL_SBRef.nii.gz', file does not exist, or folder permissions prevent seeing it
+
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: While running '/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/scripts/RibbonVolumeToSurfaceMapping.sh /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/RibbonVolumeToSurfaceMapping /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/tfMRI_LANGUAGE_RL 100307 /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/fsaverage_LR32k 32 /home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Native MSMSulc YES':
+Wed Apr 16 21:19:05 BST 2025:RibbonVolumeToSurfaceMapping.sh: ERROR: '/opt/workbench/bin_linux64/wb_command' command failed with return code: 255
+
+===> ERROR: Command returned with nonzero exit code
+---------------------------------------------------
+         script: RibbonVolumeToSurfaceMapping.sh
+stopped at line: 83
+           call: ${CARET7DIR}/wb_command -create-signed-distance-volume "$AtlasSpaceNativeFolder"/"$Subject"."$Hemisphere".white.native.surf.gii "$VolumefMRI"_SBRef.nii.gz "$WorkingDirectory"/"$Subject"."$Hemisphere".white.native.nii.gz
+  expanded call: /opt/workbench/bin_linux64/wb_command -create-signed-distance-volume "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Native"/"100307"."L".white.native.surf.gii "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/tfMRI_LANGUAGE_RL"_SBRef.nii.gz "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL/RibbonVolumeToSurfaceMapping"/"100307"."L".white.native.nii.gz
+       hostname: LX00048620
+      exit code: 255
+---------------------------------------------------
+
+===> Aborting execution!
+
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: While running '/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/GenericfMRISurfaceProcessingPipeline.sh --path=/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data --subject=100307 --fmriname=tfMRI_LANGUAGE_RL --lowresmesh=32 --fmrires=2 --smoothingFWHM=2 --grayordinatesres=2 --regname=MSMSulc':
+Wed Apr 16 21:19:05 BST 2025:GenericfMRISurfaceProcessingPipeline.sh: ERROR: '"/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/scripts"/RibbonVolumeToSurfaceMapping.sh' command failed with return code: 255
+
+===> ERROR: Command returned with nonzero exit code
+---------------------------------------------------
+         script: GenericfMRISurfaceProcessingPipeline.sh
+stopped at line: 145
+           call: "$PipelineScripts"/RibbonVolumeToSurfaceMapping.sh "$ResultsFolder"/RibbonVolumeToSurfaceMapping "$ResultsFolder"/"$NameOffMRI" "$Subject" "$AtlasSpaceFolder"/"$DownSampleFolder" "$LowResMesh" "$AtlasSpaceFolder"/"$NativeFolder" "${RegName}" "${doGoodVoxels}"
+  expanded call: "/home/hanwang/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/fMRISurface/scripts"/RibbonVolumeToSurfaceMapping.sh "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL"/RibbonVolumeToSurfaceMapping "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear/Results/tfMRI_LANGUAGE_RL"/"tfMRI_LANGUAGE_RL" "100307" "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear"/"fsaverage_LR32k" "32" "/home/hanwang/Documents/gos_ich/mh_project/hcp_example_data/100307/MNINonLinear"/"Native" "MSMSulc" "YES"
+       hostname: LX00048620
+      exit code: 255
+---------------------------------------------------
+
+===> Aborting execution!
+
