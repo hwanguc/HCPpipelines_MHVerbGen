@@ -1,0 +1,47 @@
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: HCPPIPEDIR: /home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: FSLDIR: /home/hanwang/fsl
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: FSL_FIXDIR: /home/hanwang/fsl/share/fix
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: Sourcing /home/hanwang/fsl/share/fix/settings.sh
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: Showing HCP Pipelines version
+v5.0.0
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: Showing FSL version
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: INFO: Determined that the FSL version in use is 6.0.7.18
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: FSL version: 6.0.7.18
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: FIX version: 1.06.15
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: FSL_FIX_MATLAB_MODE: 0
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: fMRI Name: rfMRI_REST1_RL
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: highpass: 2000
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: doMotionRegression: TRUE
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: TrainingData: HCP_hp2000.RData
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: FixThresh: 10
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: DeleteIntermediates: FALSE
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: tr: 0.720000 
+Wed Sep 17 15:49:49 BST 2025:hcp_fix: Running highpass
+Wed Sep 17 15:50:10 BST 2025:hcp_fix: highpass_cmd: /home/hanwang/fsl/bin/fslmaths rfMRI_REST1_RL -sub rfMRI_REST1_RL_hp2000 -bptf 1388.8888888888 -1 -add rfMRI_REST1_RL_hp2000 rfMRI_REST1_RL_hp2000
+Wed Sep 17 16:09:19 BST 2025:hcp_fix: Running MELODIC located at: /home/hanwang/fsl/share/fsl/bin/melodic
+Wed Sep 17 16:09:19 BST 2025:hcp_fix: melodic_cmd: /home/hanwang/fsl/share/fsl/bin/melodic -i rfMRI_REST1_RL_hp2000 -o rfMRI_REST1_RL_hp2000.ica/filtered_func_data.ica --nobet --report --Oall --tr=0.720000 
+Wed Sep 17 16:27:04 BST 2025:hcp_fix: melodic has been run: return_code = 0
+Wed Sep 17 16:27:04 BST 2025:hcp_fix: Creating mc/prefiltered_func_data_mcf.par file
+Wed Sep 17 16:27:12 BST 2025:hcp_fix: Running FIX
+Wed Sep 17 16:27:12 BST 2025:hcp_fix: using training data file: /home/hanwang/fsl/share/fix/training_files/HCP_hp2000.RData
+Wed Sep 17 16:27:12 BST 2025:hcp_fix: fix_cmd: /home/hanwang/fsl/share/fix/fix rfMRI_REST1_RL_hp2000.ica /home/hanwang/fsl/share/fix/training_files/HCP_hp2000.RData 10 -m -h 2000
+Wed Sep 17 16:27:12 BST 2025:hcp_fix: Check rfMRI_REST1_RL_hp2000.ica/fix/logMatlab.txt for log output from feature extraction
+Wed Sep 17 16:27:12 BST 2025:hcp_fix: Check rfMRI_REST1_RL_hp2000.ica/.fix_2b_predict.log for log output from component classification
+Wed Sep 17 16:27:12 BST 2025:hcp_fix: Check rfMRI_REST1_RL_hp2000.ica/.fix.log for log output from cleanup stage
+FIX Feature extraction for Melodic output directory: rfMRI_REST1_RL_hp2000.ica
+ create edge masks
+ run FAST
+ registration of standard space masks
+ extract features
+FIX Classifying components in Melodic directory: rfMRI_REST1_RL_hp2000.ica using training file: /home/hanwang/fsl/share/fix/training_files/HCP_hp2000.RData and threshold 10
+FIX features not already generated, so creating them now.
+FIX Feature extraction for Melodic output directory: rfMRI_REST1_RL_hp2000.ica
+ create edge masks
+ run FAST
+ registration of standard space masks
+ extract features
+No valid labelling file specified
+Wed Sep 17 16:41:05 BST 2025:hcp_fix: Done running FIX
+Could not find a supported file with prefix "rfMRI_REST1_RL_hp2000.ica/filtered_func_data_clean"
+Wed Sep 17 16:41:05 BST 2025:hcp_fix: While running '/home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/ICAFIX/hcp_fix /home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL 2000 TRUE HCP_hp2000.RData 10 FALSE':
+Wed Sep 17 16:41:05 BST 2025:hcp_fix: ERROR: '/home/hanwang/fsl/bin/immv' command failed with return code: 1

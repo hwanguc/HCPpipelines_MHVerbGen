@@ -6,7 +6,7 @@ SAVEHCPPIPE="${HCPPIPEDIR:-}"
 ## Edit this line: environment variable for location of HCP Pipeline repository
 ## If you leave it blank, and $HCPPIPEDIR already exists in the environment,
 ## that will be used instead (via the SAVEHCPPIPE variable, defined above)
-export HCPPIPEDIR="${HOME}/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0"
+export HCPPIPEDIR="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen"
 
 # Don't edit this section, it allows sourcing SetUp... without editing it if you set things in advance
 if [[ -z "$HCPPIPEDIR" ]]
@@ -20,12 +20,13 @@ then
 fi
 
 ## Edit this section: set up other environment variables
-export MSMBINDIR="${HOME}/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/MSMPackage"
+export MSMBINDIR="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/MSMPackage"
 export PATH="${MSMBINDIR}:${PATH}"
 export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
-export MATLAB_COMPILER_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/R2022b
-export FSL_FIXDIR=/home/hanwang/fsl/share/fsl/bin/fix # only needed for legacy fix
+export MATLAB_COMPILER_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/R2025a
+export FSL_FIXDIR=/home/hanwang/fsl/bin
+#export FSL_FIXDIR=/home/hanwang/fsl/share/fix # only needed for legacy fix, this is the default location for legacy fix
 # If a suitable version of wb_command is on your $PATH, CARET7DIR can be blank
 export CARET7DIR=/opt/workbench/bin_linux64
 export HCPCIFTIRWDIR="$HCPPIPEDIR"/global/matlab/cifti-matlab

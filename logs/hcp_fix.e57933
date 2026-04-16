@@ -1,0 +1,101 @@
+Unable to find MATLAB Compiler Runtime
+/home/hanwang/fsl/share/fix/call_matlab.sh [-z <mode>] [-o <options>] [-p <path>] [-h <fix path>]
+	[-c <mcr path>] [-b <binaries path>] [-l <logfile>]
+	{-r <"MATLAB code">|-m <script>|-f <function> [arguments...]}
+
+	-z <mode>:	This overrides the environment variable
+		FSL_FIX_MATLAB_MODE which would	otherwise control this.
+			0 = Use compiled MATLAB function specified by
+				-m <function name>
+			1 = Use MATLAB - requires -r or -m option
+			2 = Use Octave - requires -r or -m option
+	-r <"MATLAB code">: Evaluate the double-quoted MATLAB/Octave
+		code. Equivalent to 'matlab -r "MATLAB code"' or
+		'octave --eval "MATLAB code"'
+		Ensure that any double quotes in this string are escaped
+		with '\'.
+	-m <script>:
+		-z = 0 or not provided, run as -z = 1
+		-z = 1|2 - Run <script> in MATLAB/Octave
+			Equivalent to 'matlab \< <script>.m' or 'octave <script>.m'
+	-f <function> [arguments]:
+		-z = 0 - Call compiled MATLAB <function>
+			Arguments to be passed are given in the remainder of the
+			command line.
+		-z = 1|2 - Run <function> script in MATLAB/Octave
+			Equivalent to 'matlab -r "<function>([arguments])"' or
+			'octave --eval "<function>([arguments])"'
+			Arguments to be passed are given in the remainder of the
+			command line.
+	-o <options>: Double quoted list of MATLAB/Octave command line
+		options. Defaults to ${FSL_FIX_MLOPTS} or ${FSL_FIX_OCOPTS}
+		respectively
+	-p <path>: Path to MATLAB/Octave startup script/binary.
+		Defaults to: ${FSL_FIX_MATLAB} or ${FSL_FIX_OCTAVE}
+		respectively
+	-h <path>: Path to folder containing the Fix programs
+	-w <path>: Path to FSL MATLAB helper functions, defaults to
+			/home/hanwang/fsl/etc/matlab
+	-c <mcr path>: Path to MATLAB Compiler Runtime for the version
+		of MATLAB Fix was compiled under. Defaults to ${FSL_FIX_MCR}
+	-b <compiled path>: Path to the folder containing the compiled MATLAB
+		functions. Defaults to ${FSL_FIX_MLCDIR}
+	-l <logfile>: Append console and error output to <logfile>\n
+Unable to find MATLAB Compiler Runtime
+/home/hanwang/fsl/share/fix/call_matlab.sh [-z <mode>] [-o <options>] [-p <path>] [-h <fix path>]
+	[-c <mcr path>] [-b <binaries path>] [-l <logfile>]
+	{-r <"MATLAB code">|-m <script>|-f <function> [arguments...]}
+
+	-z <mode>:	This overrides the environment variable
+		FSL_FIX_MATLAB_MODE which would	otherwise control this.
+			0 = Use compiled MATLAB function specified by
+				-m <function name>
+			1 = Use MATLAB - requires -r or -m option
+			2 = Use Octave - requires -r or -m option
+	-r <"MATLAB code">: Evaluate the double-quoted MATLAB/Octave
+		code. Equivalent to 'matlab -r "MATLAB code"' or
+		'octave --eval "MATLAB code"'
+		Ensure that any double quotes in this string are escaped
+		with '\'.
+	-m <script>:
+		-z = 0 or not provided, run as -z = 1
+		-z = 1|2 - Run <script> in MATLAB/Octave
+			Equivalent to 'matlab \< <script>.m' or 'octave <script>.m'
+	-f <function> [arguments]:
+		-z = 0 - Call compiled MATLAB <function>
+			Arguments to be passed are given in the remainder of the
+			command line.
+		-z = 1|2 - Run <function> script in MATLAB/Octave
+			Equivalent to 'matlab -r "<function>([arguments])"' or
+			'octave --eval "<function>([arguments])"'
+			Arguments to be passed are given in the remainder of the
+			command line.
+	-o <options>: Double quoted list of MATLAB/Octave command line
+		options. Defaults to ${FSL_FIX_MLOPTS} or ${FSL_FIX_OCOPTS}
+		respectively
+	-p <path>: Path to MATLAB/Octave startup script/binary.
+		Defaults to: ${FSL_FIX_MATLAB} or ${FSL_FIX_OCTAVE}
+		respectively
+	-h <path>: Path to folder containing the Fix programs
+	-w <path>: Path to FSL MATLAB helper functions, defaults to
+			/home/hanwang/fsl/etc/matlab
+	-c <mcr path>: Path to MATLAB Compiler Runtime for the version
+		of MATLAB Fix was compiled under. Defaults to ${FSL_FIX_MCR}
+	-b <compiled path>: Path to the folder containing the compiled MATLAB
+		functions. Defaults to ${FSL_FIX_MLCDIR}
+	-l <logfile>: Append console and error output to <logfile>\n
+Wed Sep 17 16:41:05 BST 2025:hcp_fix: While running '/home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/ICAFIX/hcp_fix /home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL 2000 TRUE HCP_hp2000.RData 10 FALSE':
+Wed Sep 17 16:41:05 BST 2025:hcp_fix: ERROR: '/home/hanwang/fsl/bin/immv' command failed with return code: 1
+
+===> ERROR: Command returned with nonzero exit code
+---------------------------------------------------
+         script: hcp_fix
+stopped at line: 462
+           call: $FSLDIR/bin/immv ${fmrihp}.ica/filtered_func_data_clean ${fmrihp}_clean
+  expanded call: /home/hanwang/fsl/bin/immv rfMRI_REST1_RL_hp2000.ica/filtered_func_data_clean rfMRI_REST1_RL_hp2000_clean
+       hostname: hanwang-MS-7C56
+      exit code: 1
+---------------------------------------------------
+
+===> Aborting execution!
+

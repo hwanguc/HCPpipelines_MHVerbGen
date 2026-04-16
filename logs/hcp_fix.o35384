@@ -1,0 +1,20 @@
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: HCPPIPEDIR: /home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: FSLDIR: /home/hanwang/fsl
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: FSL_FIXDIR: /home/hanwang/fsl/share/fsl/bin/fix
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: Sourcing /home/hanwang/fsl/share/fsl/bin/fix/settings.sh
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: Showing HCP Pipelines version
+v5.0.0
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: Showing FSL version
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: INFO: Determined that the FSL version in use is 6.0.7.18
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: FSL version: 6.0.7.18
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: FSL_FIX_MATLAB_MODE: 
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: fMRI Name: rfMRI_REST1_RL
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: highpass: 0
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: doMotionRegression: TRUE
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: TrainingData: HCP_hp2000.RData
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: FixThresh: 10
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: DeleteIntermediates: FALSE
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: tr: 0.720000 
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: While running '/home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/ICAFIX/hcp_fix /home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL 0 TRUE HCP_hp2000.RData 10 FALSE':
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: ERROR: hp = 0 not currently supported
+Wed Sep 17 14:31:57 BST 2025:hcp_fix: ABORTING

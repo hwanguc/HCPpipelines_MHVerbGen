@@ -1,0 +1,19 @@
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: HCPPIPEDIR: /home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: FSLDIR: /home/hanwang/fsl
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: FSL_FIXDIR: /home/hanwang/fsl/share/fsl/bin/fix
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: Sourcing /home/hanwang/fsl/share/fsl/bin/fix/settings.sh
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: Showing HCP Pipelines version
+v5.0.0
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: Showing FSL version
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: INFO: Determined that the FSL version in use is 6.0.7.18
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: FSL version: 6.0.7.18
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: FSL_FIX_MATLAB_MODE: 
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: fMRI Name: rfMRI_REST1_RL
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: highpass: 2000
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: doMotionRegression: TRUE
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: TrainingData: HCP_hp2000.RData
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: FixThresh: 10
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: DeleteIntermediates: FALSE
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: tr: 0.720000 
+Wed Sep 17 14:33:49 BST 2025:hcp_fix: Running highpass
+Wed Sep 17 14:34:10 BST 2025:hcp_fix: highpass_cmd: /home/hanwang/fsl/bin/fslmaths rfMRI_REST1_RL -sub rfMRI_REST1_RL_hp2000 -bptf 1388.8888888888 -1 -add rfMRI_REST1_RL_hp2000 rfMRI_REST1_RL_hp2000

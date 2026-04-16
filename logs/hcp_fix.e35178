@@ -1,0 +1,3 @@
+/home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/ICAFIX/hcp_fix: line 167: /home/hanwang/fsl/share/fsl/bin/fix/settings.sh: Not a directory
+Wed Sep 17 14:30:08 BST 2025:hcp_fix: While running '/home/hanwang/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/ICAFIX/hcp_fix /home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/100307/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL 0 FALSE HCP_hp2000.RData 10 FALSE':
+Wed Sep 17 14:30:08 BST 2025:hcp_fix: ERROR: Due to a restriction in the FIX argument parsing, do_motion_regression=FALSE is not supported for FIX versions prior to 1.06.12

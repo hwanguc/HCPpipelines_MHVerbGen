@@ -388,9 +388,9 @@ if [ "X${TrainingData}" != X ]; then
         # User has specified a training data file
 	
 	# add .RData suffix if not already there
-	if [[ "${TrainingData}" != *.RData ]]; then 
-		TrainingData=${TrainingData}.RData
-	fi
+	#if [[ "${TrainingData}" != *.RData ]]; then 
+	#	TrainingData=${TrainingData}.RData
+	#fi
 
 	# if the specified TrainingData is not a full path to an existing file,
 	# assume that the user is specifying the name of a file in the training_files folder in FSL_FIXDIR
