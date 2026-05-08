@@ -39,9 +39,10 @@ get_batch_options() {
 
 get_batch_options "$@"
 
-StudyFolder="${HOME}/Documents/gos_ich/mh_project/hcp_example_data" #Location of Subject folders (named by subjectID)
-Subjlist="100307" #Space delimited list of subject IDs
-EnvironmentScript="${HOME}/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/Examples/Scripts/SetUpHCPPipeline.sh" #Pipeline environment script
+RawDataFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/raw"
+StudyFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed" #Location of Subject folders (named by subjectID)
+Subjlist=$(ls "${RawDataFolder}" | grep -v '^\.' | sort | tr '\n' ' ')  #All Krishnan subjects
+EnvironmentScript="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/Examples/Scripts/SetUpHCPPipeline.sh" #Pipeline environment script
 
 if [ -n "${command_line_specified_study_folder}" ]; then
     StudyFolder="${command_line_specified_study_folder}"
@@ -74,24 +75,7 @@ QUEUE=""
 ######################################### DO WORK ##########################################
 
 TaskList=()
-TaskList+=(rfMRI_REST1_RL)
-TaskList+=(rfMRI_REST1_LR)
-TaskList+=(rfMRI_REST2_RL)
-TaskList+=(rfMRI_REST2_LR)
-TaskList+=(tfMRI_EMOTION_RL)
-TaskList+=(tfMRI_EMOTION_LR)
-TaskList+=(tfMRI_GAMBLING_RL)
-TaskList+=(tfMRI_GAMBLING_LR)
-TaskList+=(tfMRI_LANGUAGE_RL)
-TaskList+=(tfMRI_LANGUAGE_LR)
-TaskList+=(tfMRI_MOTOR_RL)
-TaskList+=(tfMRI_MOTOR_LR)
-TaskList+=(tfMRI_RELATIONAL_RL)
-TaskList+=(tfMRI_RELATIONAL_LR)
-TaskList+=(tfMRI_SOCIAL_RL)
-TaskList+=(tfMRI_SOCIAL_LR)
-TaskList+=(tfMRI_WM_RL)
-TaskList+=(tfMRI_WM_LR)
+TaskList+=(rfMRI_VERBGEN_AP)  # Single run; treated as resting-state
 
 for Subject in $Subjlist ; do
     echo $Subject
@@ -120,7 +104,8 @@ for Subject in $Subjlist ; do
             --fmrires="$FinalfMRIResolution" \
             --smoothingFWHM="$SmoothingFWHM" \
             --grayordinatesres="$GrayordinatesResolution" \
-            --regname="$RegName"
+            --regname="$RegName" \
+            --processing-mode=LegacyStyleData
 
         # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 

@@ -14,3 +14,8 @@
 
 # nfs temporaries
 .nfs*
+
+# ignore HCP pipeline outputs and errors:
+*.sh.e*
+*.sh.o*
+

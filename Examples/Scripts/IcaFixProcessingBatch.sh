@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Global default values
-DEFAULT_STUDY_FOLDER="${HOME}/Documents/Data/ucl/gos_ich/hcp_example_data"
-DEFAULT_SUBJECT_LIST="100307"
+DEFAULT_STUDY_FOLDER="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed"
+DEFAULT_SUBJECT_LIST=$(ls "${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/raw" | grep -v '^\.' | sort | tr '\n' ' ')
 DEFAULT_ENVIRONMENT_SCRIPT="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/Examples/Scripts/SetUpHCPPipeline.sh"
 DEFAULT_RUN_LOCAL="TRUE"
 #DEFAULT_FIXDIR="${HOME}/tools/fix1.06"  ##OPTIONAL: If not set will use $FSL_FIXDIR specified in EnvironmentScript
@@ -135,7 +135,7 @@ main() {
 	# set list of fMRI on which to run ICA+FIX, separate MR FIX groups with %, use spaces (or @ like dedrift...) to otherwise separate runs
 	# the MR FIX groups determine what gets concatenated before doing ICA
 	# the groups can be whatever you want, you can make a day 1 group and a day 2 group, or just concatenate everything, etc
-	fMRINames="rfMRI_REST1_RL"
+	fMRINames="rfMRI_VERBGEN_AP"
 
 	# If you wish to run "multi-run" (concatenated) FIX, specify the names to give the concatenated output files
 	# In this case, all the runs included in ${fMRINames} become the input to multi-run FIX

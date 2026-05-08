@@ -39,9 +39,10 @@ get_batch_options() {
 
 get_batch_options "$@"
 
-StudyFolder="${HOME}/Documents/gos_ich/mh_project/hcp_example_data" #Location of Subject folders (named by subjectID)
-Subjlist="100307" #Space delimited list of subject IDs
-EnvironmentScript="${HOME}/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/Examples/Scripts/SetUpHCPPipeline.sh" #Pipeline environment script
+RawDataFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/raw"
+StudyFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed" #Location of Subject folders (named by subjectID)
+Subjlist=$(ls "${RawDataFolder}" | grep -v '^\.' | sort | tr '\n' ' ')  #All Krishnan subjects
+EnvironmentScript="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/Examples/Scripts/SetUpHCPPipeline.sh" #Pipeline environment script
 
 if [ -n "${command_line_specified_study_folder}" ]; then
     StudyFolder="${command_line_specified_study_folder}"
@@ -130,24 +131,7 @@ SCRIPT_NAME=`basename "$0"`
 echo $SCRIPT_NAME
 
 TaskList=()
-TaskList+=(rfMRI_REST1_RL)
-TaskList+=(rfMRI_REST1_LR)
-TaskList+=(rfMRI_REST2_RL)
-TaskList+=(rfMRI_REST2_LR)
-TaskList+=(tfMRI_EMOTION_RL)
-TaskList+=(tfMRI_EMOTION_LR)
-TaskList+=(tfMRI_GAMBLING_RL)
-TaskList+=(tfMRI_GAMBLING_LR)
-TaskList+=(tfMRI_LANGUAGE_RL)
-TaskList+=(tfMRI_LANGUAGE_LR)
-TaskList+=(tfMRI_MOTOR_RL)
-TaskList+=(tfMRI_MOTOR_LR)
-TaskList+=(tfMRI_RELATIONAL_RL)
-TaskList+=(tfMRI_RELATIONAL_LR)
-TaskList+=(tfMRI_SOCIAL_RL)
-TaskList+=(tfMRI_SOCIAL_LR)
-TaskList+=(tfMRI_WM_RL)
-TaskList+=(tfMRI_WM_LR)
+TaskList+=(rfMRI_VERBGEN_AP)  # Single run; PE direction j- (AP/y-); treated as resting-state
 
 # Start or launch pipeline processing for each subject
 for Subject in $Subjlist ; do
@@ -193,45 +177,28 @@ for Subject in $Subjlist ; do
         # Set to NONE if you want to use the first volume of the timeseries for motion correction
         fMRISBRef="${StudyFolder}/${Subject}/unprocessed/3T/${fMRIName}/${Subject}_3T_${fMRIName}_SBRef.nii.gz"
 
-        # "Effective" Echo Spacing of fMRI image (specified in *sec* for the fMRI processing)
-        # EchoSpacing = 1/(BWPPPE * ReconMatrixPE)
-        #   where BWPPPE is the "BandwidthPerPixelPhaseEncode" = DICOM field (0019,1028) for Siemens, and
-        #   ReconMatrixPE = size of the reconstructed image in the PE dimension
-        # In-plane acceleration, phase oversampling, phase resolution, phase field-of-view, and interpolation
-        # all potentially need to be accounted for (which they are in Siemen's reported BWPPPE)
-        EchoSpacing="0.00058" 
+        # EffectiveEchoSpacing from fMRI JSON: 1 / (BandwidthPerPixelPhaseEncode * ReconMatrixPE)
+        # = 1 / (21.786 * 90) = 0.000510012 s
+        EchoSpacing="0.000510012"
 
-        # Susceptibility distortion correction method (required for accurate processing)
-        # Values: TOPUP, SiemensFieldMap (same as FIELDMAP), GEHealthCareLegacyFieldMap, GEHealthCareFieldMap, PhilipsFieldMap
-        DistortionCorrection="TOPUP"
+        # Susceptibility distortion correction method
+        # Krishnan data has Siemens gradient echo fieldmaps (no spin echo / TOPUP)
+        DistortionCorrection="SiemensFieldMap"
 
         # Receive coil bias field correction method
-        # Values: NONE, LEGACY, or SEBASED
-        #   SEBASED calculates bias field from spin echo images (which requires TOPUP distortion correction)
-        #   LEGACY uses the T1w bias field (method used for 3T HCP-YA data, but non-optimal; no longer recommended).
-        BiasCorrection="SEBASED"
+        # SEBASED requires TOPUP spin echo fieldmaps; use LEGACY (T1w-based) instead
+        BiasCorrection="LEGACY"
 
-        # For the spin echo field map volume with a 'negative' phase encoding direction
-        # (LR in HCP-YA data; AP in 7T HCP-YA and HCP-D/A data)
-        # Set to NONE if using regular FIELDMAP
-        SpinEchoPhaseEncodeNegative="${StudyFolder}/${Subject}/unprocessed/3T/${fMRIName}/${Subject}_3T_SpinEchoFieldMap_LR.nii.gz"
+        # No spin echo field maps in Krishnan data
+        SpinEchoPhaseEncodeNegative="NONE"
+        SpinEchoPhaseEncodePositive="NONE"
+        TopUpConfig="NONE"
 
-        # For the spin echo field map volume with a 'positive' phase encoding direction
-        # (RL in HCP-YA data; PA in 7T HCP-YA and HCP-D/A data)
-        # Set to NONE if using regular FIELDMAP
-        SpinEchoPhaseEncodePositive="${StudyFolder}/${Subject}/unprocessed/3T/${fMRIName}/${Subject}_3T_SpinEchoFieldMap_RL.nii.gz"
-
-        # Topup configuration file (if using TOPUP)
-        # Set to NONE if using regular FIELDMAP
-        TopUpConfig="${HCPPIPEDIR_Config}/b02b0.cnf"
-
-        # Not using Siemens Gradient Echo Field Maps for susceptibility distortion correction
-        # Set following to NONE if using TOPUP
-        # or set the following inputs if using regular FIELDMAP (i.e. SiemensFieldMap GEHealthCareFieldMap PhilipsFieldMap)
-        MagnitudeInputName="NONE" #Expects 4D Magnitude volume with two 3D volumes (differing echo times) - or a single 3D Volume
-        PhaseInputName="NONE" #Expects a 3D Phase difference volume (Siemen's style) -or Fieldmap in Hertz for GE Healthcare
-        DeltaTE="NONE" #For Siemens, typically 2.46ms for 3T, 1.02ms for 7T; For GE Healthcare at 3T, *usually* 2.304ms for 2D-B0MAP and 2.272ms for 3D-B0MAP
-        # For GE HealthCare, see related notes in PreFreeSurferPipelineBatch.sh and FieldMapProcessingAll.sh
+        # Siemens gradient echo fieldmap files (created by ReorganiseKrishnanData.sh)
+        MagnitudeInputName="${StudyFolder}/${Subject}/unprocessed/3T/T1w_MPR1/${Subject}_3T_FieldMap_Magnitude.nii.gz"
+        PhaseInputName="${StudyFolder}/${Subject}/unprocessed/3T/T1w_MPR1/${Subject}_3T_FieldMap_Phase.nii.gz"
+        # DeltaTE = (EchoTime2 - EchoTime1) * 1000 = (7.38 - 4.92) ms = 2.46 ms
+        DeltaTE="2.46"
 
         # Path to GE HealthCare Legacy style B0 fieldmap with two volumes
         #   1. field map in hertz
@@ -286,7 +253,8 @@ for Subject in $Subjlist ; do
             --gdcoeffs="$GradientDistortionCoeffs" \
             --topupconfig="$TopUpConfig" \
             --biascorrection="$BiasCorrection" \
-            --mctype="$MCType"
+            --mctype="$MCType" \
+            --processing-mode=LegacyStyleData
 
         # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 

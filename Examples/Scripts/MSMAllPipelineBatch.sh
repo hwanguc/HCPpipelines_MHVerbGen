@@ -39,9 +39,10 @@ get_batch_options() {
 
 get_batch_options "$@"
 
-StudyFolder="${HOME}/projects/Pipelines_ExampleData" #Location of Subject folders (named by subjectID)
-Subjlist="100307 100610" #Space delimited list of subject IDs
-EnvironmentScript="${HOME}/projects/Pipelines/Examples/Scripts/SetUpHCPPipeline.sh" #Pipeline environment script
+RawDataFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/raw"
+StudyFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed" #Location of Subject folders (named by subjectID)
+Subjlist=$(ls "${RawDataFolder}" | grep -v '^\.' | sort | tr '\n' ' ')  #All Krishnan subjects
+EnvironmentScript="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/Examples/Scripts/SetUpHCPPipeline.sh" #Pipeline environment script
 
 if [ -n "${command_line_specified_study_folder}" ]; then
     StudyFolder="${command_line_specified_study_folder}"
@@ -73,28 +74,18 @@ QUEUE=""
 
 ######################################### DO WORK ##########################################
 
-# fMRINames is for single-run FIX data, set MR FIX settings to empty
-# fMRINames="rfMRI_REST1_LR@rfMRI_REST1_RL@rfMRI_REST2_LR@rfMRI_REST2_RL"
-# mrfixNames=""
-# mrfixConcatName=""
-# mrfixNamesToUse=""
-# OutfMRIName="rfMRI_REST"
+# Krishnan data has a single fMRI run processed with single-run ICA-FIX (bandpass=2000).
+# Use single-run FIX mode: populate fMRINames, leave MR FIX variables empty.
+fMRINames="rfMRI_VERBGEN_AP"
+mrfixNames=""
+mrfixConcatName=""
+mrfixNamesToUse=""
+OutfMRIName="rfMRI_VERBGEN_AP"
 
-# For MR FIX, set fMRINames to empty
-fMRINames=""
-# the original MR FIX parameter for what to concatenate. List all single runs from one concatenated group separated with @.
-mrfixNames="rfMRI_REST1_RL@rfMRI_REST1_LR@tfMRI_WM_RL@tfMRI_WM_LR@tfMRI_GAMBLING_RL@tfMRI_GAMBLING_LR@tfMRI_MOTOR_RL@tfMRI_MOTOR_LR@rfMRI_REST2_LR@rfMRI_REST2_RL@tfMRI_LANGUAGE_RL@tfMRI_LANGUAGE_LR@tfMRI_SOCIAL_RL@tfMRI_SOCIAL_LR@tfMRI_RELATIONAL_RL@tfMRI_RELATIONAL_LR@tfMRI_EMOTION_RL@tfMRI_EMOTION_LR"
-# the original MR FIX concatenated name (only one group)
-mrfixConcatName="fMRI_CONCAT"
-# @-separated list of runs to use for this new MSMAll run of MR FIX
-mrfixNamesToUse="rfMRI_REST1_RL@rfMRI_REST1_LR@rfMRI_REST2_LR@rfMRI_REST2_RL"
-# FIX output concat name for this new MSMAll run of MR FIX
-OutfMRIName="rfMRI_REST_CONCAT"
-
-#Use HighPass = 2000 for single-run FIX data, HighPass = 0 for MR FIX data
-HighPass="0"
-#Name to reflect high pass setting
-fMRIProcSTRING="_Atlas_hp0_clean"
+# HighPass must match the bandpass value used in IcaFixProcessingBatch.sh (2000 s for single-run FIX)
+HighPass="2000"
+# fMRIProcSTRING must match: _Atlas_hp${HighPass}_clean
+fMRIProcSTRING="_Atlas_hp2000_clean"
 MSMAllTemplates="${HCPPIPEDIR}/global/templates/MSMAll"
 MyelinTargetFile="${MSMAllTemplates}/Q1-Q6_RelatedParcellation210.MyelinMap_BC_MSMAll_2_d41_WRN_DeDrift.32k_fs_LR.dscalar.nii"
 RegName="MSMAll_InitalReg"

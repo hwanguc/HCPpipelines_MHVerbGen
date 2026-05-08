@@ -136,11 +136,12 @@ main()
 	get_batch_options "$@"
 
 	# Set variable values that locate and specify data to process
-	StudyFolder="${HOME}/Documents/gos_ich/mh_project/hcp_example_data" # Location of Session folders (named by sessionID)
-	Sessionlist="100307"                             # Space delimited list of session IDs
+	RawDataFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/raw"
+	StudyFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed" # Location of Session folders (named by sessionID)
+	Sessionlist=$(ls "${RawDataFolder}" | grep -v '^\.' | sort | tr '\n' ' ')  # All Krishnan subjects
 
 	# Set variable value that sets up environment
-	EnvironmentScript="${HOME}/Apps/working_directory/bash_python_proj/HCPpipelines-5.0.0/Examples/Scripts/SetUpHCPPipeline.sh" # Pipeline environment script
+	EnvironmentScript="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/Examples/Scripts/SetUpHCPPipeline.sh" # Pipeline environment script
 
 	# Use any command line specified options to override any of the variable settings above
 	if [ -n "${command_line_specified_study_folder}" ]; then
@@ -229,16 +230,10 @@ main()
 		done
 		echo "Found ${numT1ws} T1w Images for session ${Session}"
 
-		# Detect Number of T2w Images and build list of full paths to
-		# T2w images
-		T2wInputImages=""
+		# Krishnan data has no T2w; skip detection and pass NONE to the pipeline
+		T2wInputImages="NONE"
 		numT2ws=0
-		for folder in "${StudyFolder}/${Session}/unprocessed/3T"/T2w_SPC?; do
-			folderbase=$(basename "$folder")
-			T2wInputImages+="$folder/${Session}_3T_$folderbase.nii.gz@"
-			numT2ws=$((numT2ws + 1))
-		done
-		echo "Found ${numT2ws} T2w Images for session ${Session}"
+		echo "No T2w images for session ${Session} (Krishnan data is T1w-only)"
 
 		# Readout Distortion Correction:
 		#
@@ -296,14 +291,14 @@ main()
 
 		# The MagnitudeInputName variable should be set to a 4D magitude volume
 		# with two 3D timepoints or "NONE" if not used
+		# Created by ReorganiseKrishnanData.sh (fslmerge of magnitude1 + magnitude2)
 		MagnitudeInputName="${StudyFolder}/${Session}/unprocessed/3T/T1w_MPR1/${Session}_3T_FieldMap_Magnitude.nii.gz"
 
 		# The PhaseInputName variable should be set to a 3D phase difference
 		# volume or "NONE" if not used
 		PhaseInputName="${StudyFolder}/${Session}/unprocessed/3T/T1w_MPR1/${Session}_3T_FieldMap_Phase.nii.gz"
 
-		# The DeltaTE (echo time difference) of the fieldmap.  For HCP Young Adult data, this variable would typically be 2.46ms for 3T scans, 1.02ms for 7T
-		# scans, or "NONE" if not using readout distortion correction
+		# DeltaTE = (EchoTime2 - EchoTime1) * 1000 = (7.38 - 4.92) ms = 2.46 ms
 		DeltaTE="2.46"
 
 		# ----------------------------------------------------------------------
@@ -455,13 +450,13 @@ main()
 		# The values set below are for the HCP-YA Protocol using the Siemens
 		# Connectom Scanner
 
-		# DICOM field (0019,1018) in s or "NONE" if not used
-		T1wSampleSpacing="0.0000074"
+		# DICOM field (0019,1018) in s: derived from DwellTime in T1w JSON (1.3e-05 s)
+		T1wSampleSpacing="0.0000130"
 
-		# DICOM field (0019,1018) in s or "NONE" if not used
-		T2wSampleSpacing="0.0000021"
+		# No T2w in Krishnan data
+		T2wSampleSpacing="NONE"
 
-		# z appears to be the appropriate polarity for the 3D structurals collected on Siemens scanners
+		# z is the readout direction for Siemens 3D MPRAGE after fslreorient2std
 		UnwarpDir="z"
 
 		# Other Config Settings
@@ -495,6 +490,7 @@ main()
 			--session="$Session" \
 			--t1="$T1wInputImages" \
 			--t2="$T2wInputImages" \
+			--processing-mode=LegacyStyleData \
 			--t1template="$T1wTemplate" \
 			--t1templatebrain="$T1wTemplateBrain" \
 			--t1template2mm="$T1wTemplate2mm" \
