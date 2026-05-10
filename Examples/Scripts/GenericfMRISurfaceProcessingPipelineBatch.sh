@@ -104,8 +104,7 @@ for Subject in $Subjlist ; do
             --fmrires="$FinalfMRIResolution" \
             --smoothingFWHM="$SmoothingFWHM" \
             --grayordinatesres="$GrayordinatesResolution" \
-            --regname="$RegName" \
-            --processing-mode=LegacyStyleData
+            --regname="$RegName"
 
         # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 

@@ -22,7 +22,7 @@ fi
 ## Edit this section: set up other environment variables
 export MSMBINDIR="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/MSMPackage"
 export PATH="${MSMBINDIR}:${PATH}"
-export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="${MSMBINDIR}/lib:/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 export MATLAB_COMPILER_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/R2025a
 export FSL_FIXDIR=/home/hanwang/fsl/bin
