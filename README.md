@@ -1,14 +1,13 @@
 # HCP Pipelines 
 
-## Date: 25-04-09
-## Adapted by Han Wang for re-processing T1w and T2w images in Krishnan et al. (2021). Modified scripts for PreFreesurfer, Freesurfer, PostFreesurfer, GenericfMRIVolumne, GenericfMRISurface, and ICA-FIX pipelines are under "/Examples/Scripts".
+Adapted by **Han Wang (2025)**
 
-The HCP Pipelines product is a set of tools (primarily, but not exclusively,
+Adapted by Han Wang for re-processing T1w and T2w images in Krishnan et al. (2021). Modified scripts for PreFreesurfer, Freesurfer, PostFreesurfer, GenericfMRIVolumne, GenericfMRISurface, and ICA-FIX pipelines (to perform in this order) are under "/Examples/Scripts". The HCP Pipelines product is a set of tools (primarily, but not exclusively,
 shell scripts) for processing MRI images for the [Human Connectome Project][HCP]. 
 Among other things, these tools implement the Minimal Preprocessing Pipeline 
 (MPP) described in [Glasser et al. 2013][GlasserEtAl]
 
-For further information, please see:
+For further information of HCP pipeline, please see:
 
 * The [Release Notes, Installation, and Usage][release-install-use] document
   for the current release,
