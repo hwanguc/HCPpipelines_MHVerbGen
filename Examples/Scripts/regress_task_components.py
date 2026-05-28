@@ -45,14 +45,15 @@ def main():
     X = np.column_stack([np.ones(n_vols), regressors])  # (n_vols, 1 + n_regressors)
 
     print(f"Loading {input_cifti} ...")
-    img  = nib.load(input_cifti)
-    data = img.get_fdata(dtype=np.float32)               # (n_vols, n_grayordinates)
+    img   = nib.load(input_cifti)
+    dtype = img.get_data_dtype()
+    data  = img.get_fdata(dtype=np.float64)              # (n_vols, n_grayordinates)
 
     # OLS: beta = (X'X)^{-1} X' Y,  residuals = Y - X @ beta
     beta      = np.linalg.lstsq(X, data, rcond=None)[0] # (1 + n_regressors, n_grayordinates)
     residuals = data - X @ beta                          # (n_vols, n_grayordinates)
 
-    residuals = residuals.astype(np.float32)
+    residuals = residuals.astype(dtype)                  # preserve original precision
 
     print(f"Saving residuals to {output_cifti} ...")
     new_img = nib.Cifti2Image(residuals, header=img.header, nifti_header=img.nifti_header)
