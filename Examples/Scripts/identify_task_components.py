@@ -7,12 +7,24 @@ design with a canonical double-gamma HRF, then reports the Pearson correlation
 between each Signal component's time course and the task regressor.
 
 Usage:
-    python identify_task_components.py <ica_dir> <events_tsv>
+    python identify_task_components.py <ica_dir> <events_tsv> [threshold] [--tr=<TR>] [--components-only]
+
+Arguments:
+    ica_dir           Path to the subject's .ica directory
+    events_tsv        Path to the BIDS events TSV file (shared across subjects)
+    threshold         Absolute correlation threshold for task-driven label (default: 0.3)
+    --tr=<TR>         Repetition time in seconds (default: 0.8)
+    --components-only Print only a space-separated list of task-driven component IDs
+                      and suppress all other output. Prints nothing if none found.
+                      Suitable for capturing output in a batch script via $(...).
 
 Example:
     python identify_task_components.py \
         ~/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed/sub-509BT/MNINonLinear/Results/rfMRI_VERBGEN_AP/rfMRI_VERBGEN_AP_hp2000.ica \
         ~/Documents/Data/ucl/gos_ich/verb_gen_krishnan/other/task-verbgen_events.tsv
+
+    # Batch-friendly form (captures component IDs into a shell variable):
+    TASK_COMPS=$(python identify_task_components.py <ica_dir> <events_tsv> --components-only)
 """
 
 import sys
@@ -93,9 +105,23 @@ def main():
         print(__doc__)
         sys.exit(1)
 
-    ica_dir = os.path.expanduser(sys.argv[1])
-    events_file = os.path.expanduser(sys.argv[2])
-    threshold = float(sys.argv[3]) if len(sys.argv) > 3 else 0.3
+    # Parse arguments — positional: ica_dir, events_tsv, optional threshold;
+    # named flags: --tr=, --components-only
+    positional = []
+    tr = 0.8
+    components_only = False
+
+    for arg in sys.argv[1:]:
+        if arg == "--components-only":
+            components_only = True
+        elif arg.startswith("--tr="):
+            tr = float(arg.split("=", 1)[1])
+        else:
+            positional.append(arg)
+
+    ica_dir     = os.path.expanduser(positional[0])
+    events_file = os.path.expanduser(positional[1])
+    threshold   = float(positional[2]) if len(positional) > 2 else 0.3
 
     mix_file = os.path.join(ica_dir, "filtered_func_data.ica", "melodic_mix")
     if not os.path.exists(mix_file):
@@ -103,38 +129,47 @@ def main():
 
     mixing = np.loadtxt(mix_file)  # shape: (n_vols, n_components)
     n_vols, n_components = mixing.shape
-    tr = 0.8  # hardcoded for this dataset
 
-    print(f"Mixing matrix: {n_vols} volumes x {n_components} components, TR={tr}s")
+    if not components_only:
+        print(f"Mixing matrix: {n_vols} volumes x {n_components} components, TR={tr}s")
 
     signal_comps, _ = load_fix_labels(ica_dir)
-    print(f"Signal components (kept by ICA-FIX): {sorted(signal_comps)}\n")
+
+    if not components_only:
+        print(f"Signal components (kept by ICA-FIX): {sorted(signal_comps)}\n")
 
     regressor = build_task_regressor(events_file, n_vols, tr, trial_type="verbgen")
 
-    print(f"{'Comp':>6}  {'r':>7}  {'p':>10}  {'Interpretation'}")
-    print("-" * 55)
+    if not components_only:
+        print(f"{'Comp':>6}  {'r':>7}  {'p':>10}  {'Interpretation'}")
+        print("-" * 55)
 
     task_driven = []
     for comp_id in sorted(signal_comps):
         tc = mixing[:, comp_id - 1]  # 0-indexed
         tc_z = (tc - tc.mean()) / tc.std()
         r, p = pearsonr(tc_z, regressor)
-        flag = " <-- task-driven" if abs(r) >= threshold else ""
-        print(f"{comp_id:>6}  {r:>7.3f}  {p:>10.4f}{flag}")
+        if not components_only:
+            flag = " <-- task-driven" if abs(r) >= threshold else ""
+            print(f"{comp_id:>6}  {r:>7.3f}  {p:>10.4f}{flag}")
         if abs(r) >= threshold:
             task_driven.append(comp_id)
 
-    print()
-    if task_driven:
-        print(f"Task-driven signal components (|r| >= {threshold}): {task_driven}")
-        print("These components contribute task-related variance to the rest blocks.")
-        print("For rest-only FC analysis, regress them out using:")
-        print(f"  wb_command -cifti-regressors ...")
-        print(f"  or extract their columns from the mixing matrix and use fsl_glm.")
+    if components_only:
+        if task_driven:
+            print(" ".join(str(c) for c in task_driven))
+        # print nothing if no task-driven components found
     else:
-        print(f"No signal components show |r| >= {threshold} with the task regressor.")
-        print("Task contamination in the rest blocks is likely minimal.")
+        print()
+        if task_driven:
+            print(f"Task-driven signal components (|r| >= {threshold}): {task_driven}")
+            print("These components contribute task-related variance to the rest blocks.")
+            print("For rest-only FC analysis, regress them out using:")
+            print(f"  wb_command -cifti-regressors ...")
+            print(f"  or extract their columns from the mixing matrix and use fsl_glm.")
+        else:
+            print(f"No signal components show |r| >= {threshold} with the task regressor.")
+            print("Task contamination in the rest blocks is likely minimal.")
 
 
 if __name__ == "__main__":
