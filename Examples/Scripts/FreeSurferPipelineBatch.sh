@@ -106,7 +106,8 @@ for Session in $Sessionlist ; do
       --t1w-brain="$T1wImageBrain" \
       --t2w-image="$T2wImage" \
       --processing-mode=LegacyStyleData
-      
+  rc=$?
+
   # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 
   echo "set -- --session=$Session \
@@ -118,4 +119,5 @@ for Session in $Sessionlist ; do
   echo ". ${EnvironmentScript}"
 
 done
+exit ${rc:-0}
 

@@ -112,6 +112,7 @@ for Subject in $Subjlist ; do
         --processing-mode=LegacyStyleData)
     
     "${job[@]}"
+    rc=$?
 
     # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 
@@ -130,3 +131,4 @@ for Subject in $Subjlist ; do
 
     echo ". ${EnvironmentScript}"
 done
+exit ${rc:-0}

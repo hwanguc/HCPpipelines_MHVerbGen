@@ -234,8 +234,7 @@ for Subject in $Subjlist ; do
             queuing_command=("$FSLDIR/bin/fsl_sub" -q "$QUEUE")
         fi
 
-        "${queuing_command[@]}" "$HCPPIPEDIR"/fMRIVolume/GenericfMRIVolumeProcessingPipeline.sh \
-            --path="$StudyFolder" \
+        "${queuing_command[@]}" "$HCPPIPEDIR"/fMRIVolume/GenericfMRIVolumeProcessingPipeline.sh \            --path="$StudyFolder" \
             --subject="$Subject" \
             --fmriname="$fMRIName" \
             --fmritcs="$fMRITimeSeries" \
@@ -255,6 +254,7 @@ for Subject in $Subjlist ; do
             --biascorrection="$BiasCorrection" \
             --mctype="$MCType" \
             --processing-mode=LegacyStyleData
+        rc=$?
 
         # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 
@@ -282,3 +282,4 @@ for Subject in $Subjlist ; do
 
     done
 done
+exit ${rc:-0}

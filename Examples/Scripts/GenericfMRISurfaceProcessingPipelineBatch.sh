@@ -105,6 +105,7 @@ for Subject in $Subjlist ; do
             --smoothingFWHM="$SmoothingFWHM" \
             --grayordinatesres="$GrayordinatesResolution" \
             --regname="$RegName"
+        rc=$?
 
         # The following lines are used for interactive debugging to set the positional parameters: $1 $2 $3 ...
 
@@ -121,3 +122,4 @@ for Subject in $Subjlist ; do
 
     done
 done
+exit ${rc:-0}
