@@ -10,9 +10,8 @@
 #   fMRIVolume → fMRISurface → IcaFix → RestExtraction
 #
 # Progress is logged to ${StudyFolder}/logs/pipeline_progress.log (TSV).
-# Stages already marked DONE in the log are skipped with a warning unless
-# --ForceOverwrite is set. If a stage fails, remaining stages for that subject
-# are skipped and the script moves on to the next subject.
+# Stages already marked DONE in the log are skipped unless --ForceOverwrite is set.
+# If a stage fails, remaining stages for that subject are skipped.
 #
 # Usage:
 #   ./RunFullPipelineBatch.sh [options]
@@ -21,11 +20,16 @@
 #   --Subjects="sub-538BT sub-532BT"  Space-separated subject IDs
 #                                     Default: all 44 subjects from the subsample CSV
 #   --Stages="all"                    Stages to run (default: all)
-#                                     Valid names: PreFreeSurfer FreeSurfer PostFreeSurfer
-#                                                  fMRIVolume fMRISurface IcaFix RestExtraction
+#                                     Valid: PreFreeSurfer FreeSurfer PostFreeSurfer
+#                                            fMRIVolume fMRISurface IcaFix RestExtraction
 #   --Parallel=N                      Number of subjects to process concurrently (default: 1)
+#   --MoveToExternal=PATH             After each parallel batch completes, copy processed
+#                                     outputs to PATH (resolving all symlinks for exFAT
+#                                     compatibility) and remove them from the internal drive,
+#                                     leaving only unprocessed/ on the internal drive.
+#                                     Switches parallel dispatch to batched mode.
 #   --ForceOverwrite                  Re-run stages already marked DONE in the log
-#   --StudyFolder=<path>              Override default processed data folder
+#   --StudyFolder=PATH                Override default processed data folder
 #   --DryRun                          Print commands without executing them
 
 # ---------------------------------------------------------------------------
@@ -43,6 +47,7 @@ Stages="all"
 Parallel=1
 ForceOverwrite="FALSE"
 DryRun="FALSE"
+ExternalFolder=""
 
 # ---------------------------------------------------------------------------
 # Parse arguments
@@ -67,6 +72,9 @@ for arg in "$@"; do
         --DryRun)
             DryRun="TRUE"
             ;;
+        --MoveToExternal=*)
+            ExternalFolder="${arg#*=}"
+            ;;
         *)
             echo "ERROR: Unrecognized option: ${arg}"
             exit 1
@@ -84,6 +92,23 @@ if [ -z "${Subjlist}" ]; then
         exit 1
     fi
     Subjlist=$(awk -F',' 'NR>1 {gsub(/"/, "", $2); print "sub-" $2}' "${SUBSAMPLE_CSV}" | tr '\n' ' ')
+fi
+
+# ---------------------------------------------------------------------------
+# Validate --MoveToExternal path is accessible
+# ---------------------------------------------------------------------------
+if [ -n "${ExternalFolder}" ] && [ "${DryRun}" = "FALSE" ]; then
+    ext_parent=$(dirname "${ExternalFolder}")
+    if [ ! -d "${ext_parent}" ]; then
+        echo "ERROR: External drive not accessible — parent directory not found: ${ext_parent}"
+        echo "       Check that the drive is plugged in and mounted."
+        exit 1
+    fi
+    mkdir -p "${ExternalFolder}" || {
+        echo "ERROR: Cannot create external folder: ${ExternalFolder}"
+        echo "       Check that the drive is plugged in and mounted."
+        exit 1
+    }
 fi
 
 # ---------------------------------------------------------------------------
@@ -160,7 +185,59 @@ run_stage_script() {
 }
 
 # ---------------------------------------------------------------------------
-# Per-subject processing function (all 7 stages in sequence)
+# Helper: archive a subject to external drive after successful processing.
+#
+# Copies all processed output directories to ExternalFolder, resolving
+# symlinks so actual file content is stored (exFAT compatible). Also copies
+# unprocessed/ with symlinks resolved so the external drive holds the full
+# self-contained dataset. Then removes all output directories from the
+# internal drive, leaving only unprocessed/ there.
+# ---------------------------------------------------------------------------
+archive_to_external() {
+    local subject="$1"
+    local src="${StudyFolder}/${subject}"
+    local dst="${ExternalFolder}/${subject}"
+
+    if [ "${DryRun}" = "TRUE" ]; then
+        echo "  [DryRun] Would archive ${subject}: ${src} → ${dst} (symlinks resolved)"
+        return 0
+    fi
+
+    echo "  [ARCHIVE] ${subject}: copying to external drive (resolving symlinks)..."
+    mkdir -p "${dst}"
+
+    local failed=0
+
+    # --no-perms/--no-owner/--no-group: exFAT doesn't support Unix permissions
+    local rsync_opts=(-a --copy-links --no-perms --no-owner --no-group)
+
+    # Copy unprocessed/ to external with symlinks resolved
+    if [ -d "${src}/unprocessed" ]; then
+        rsync "${rsync_opts[@]}" "${src}/unprocessed/" "${dst}/unprocessed/" \
+            || { echo "  [ARCHIVE ERROR] Failed to copy unprocessed/ for ${subject}"; failed=1; }
+    fi
+
+    # Copy each processed output dir to external (symlinks resolved), then delete from internal
+    for dir in "${src}"/*/; do
+        local dname
+        dname=$(basename "${dir}")
+        [ "${dname}" = "unprocessed" ] && continue
+
+        rsync "${rsync_opts[@]}" "${src}/${dname}/" "${dst}/${dname}/" \
+            && rm -rf "${src:?}/${dname}" \
+            || { echo "  [ARCHIVE ERROR] Failed to copy ${dname} for ${subject}"; failed=1; }
+    done
+
+    if [ ${failed} -eq 0 ]; then
+        echo "  [ARCHIVE] ${subject}: done. Internal drive retains only: ${src}/unprocessed/"
+    else
+        echo "  [ARCHIVE] ${subject}: completed with errors — check output above."
+    fi
+    return ${failed}
+}
+
+# ---------------------------------------------------------------------------
+# Per-subject processing function (all requested stages in sequence)
 # ---------------------------------------------------------------------------
 process_subject() {
     local Subject="$1"
@@ -188,42 +265,34 @@ process_subject() {
         echo "  [START] ${Stage} — $(date +"%Y-%m-%dT%H:%M:%S")"
 
         case "${Stage}" in
-
             PreFreeSurfer)
                 run_stage_script "PreFreeSurferPipelineBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
             FreeSurfer)
                 run_stage_script "FreeSurferPipelineBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
             PostFreeSurfer)
                 run_stage_script "PostFreeSurferPipelineBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
             fMRIVolume)
                 run_stage_script "GenericfMRIVolumeProcessingPipelineBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
             fMRISurface)
                 run_stage_script "GenericfMRISurfaceProcessingPipelineBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
             IcaFix)
                 run_stage_script "IcaFixProcessingBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
             RestExtraction)
                 run_stage_script "ExtractRestBlocksBatch.sh" "${Subject}"
                 rc=$?
                 ;;
-
         esac
 
         if [ ${rc} -eq 0 ]; then
@@ -241,7 +310,41 @@ process_subject() {
 }
 
 # ---------------------------------------------------------------------------
-# Main loop — sequential or parallel depending on --Parallel=N
+# Helper: copy the logs directory to the external drive
+# ---------------------------------------------------------------------------
+sync_logs_to_external() {
+    if [ "${DryRun}" = "TRUE" ]; then
+        echo "  [DryRun] Would sync logs: ${LogDir} → ${ExternalFolder}/logs/"
+        return 0
+    fi
+    local ext_logs="${ExternalFolder}/logs"
+    mkdir -p "${ext_logs}"
+    rsync -a --no-perms --no-owner --no-group "${LogDir}/" "${ext_logs}/" \
+        && echo "  [LOGS] Synced logs to ${ext_logs}" \
+        || echo "  [LOGS ERROR] Failed to sync logs to ${ext_logs}"
+}
+
+# ---------------------------------------------------------------------------
+# Helper: check if all requested stages are DONE for a subject
+# ---------------------------------------------------------------------------
+all_stages_done() {
+    local subject="$1"
+    for stage in "${StageList[@]}"; do
+        is_done "${subject}" "${stage}" || return 1
+    done
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+# Main dispatch
+#
+# Two modes:
+#   Rolling pool  (Parallel > 1, no --MoveToExternal): launch up to N jobs,
+#                 start the next as soon as one finishes. Most CPU-efficient.
+#
+#   Batched       (--MoveToExternal set, any Parallel): process subjects in
+#                 waves of N; wait for the entire wave before archiving to
+#                 external drive and starting the next wave.
 # ---------------------------------------------------------------------------
 echo "========================================"
 echo "HCP Full Pipeline Batch Run"
@@ -251,27 +354,67 @@ echo "Parallel : ${Parallel}"
 echo "Log file : ${LogFile}"
 echo "Overwrite: ${ForceOverwrite}"
 echo "DryRun   : ${DryRun}"
+[ -n "${ExternalFolder}" ] && echo "Archive  : ${ExternalFolder}"
 echo "========================================"
 echo ""
 
-if [ "${Parallel}" -gt 1 ]; then
+if [ "${Parallel}" -gt 1 ] && [ -z "${ExternalFolder}" ]; then
+    # --- Rolling pool: efficient when archiving is not needed ---
     job_count=0
     for Subject in ${Subjlist}; do
         process_subject "${Subject}" &
         job_count=$(( job_count + 1 ))
         if [ ${job_count} -ge "${Parallel}" ]; then
-            # Wait for any one child to finish before launching the next
             wait -n 2>/dev/null || wait
             job_count=$(( job_count - 1 ))
         fi
     done
-    wait  # drain remaining background jobs
+    wait
+
 else
-    for Subject in ${Subjlist}; do
-        process_subject "${Subject}"
+    # --- Batched dispatch: required for archive-after-wave behaviour ---
+    read -r -a SubjArray <<< "${Subjlist}"
+    total=${#SubjArray[@]}
+    i=0
+
+    while [ ${i} -lt ${total} ]; do
+        # Build this wave (up to Parallel subjects)
+        wave=()
+        for (( j=0; j<Parallel && (i+j)<total; j++ )); do
+            wave+=("${SubjArray[$((i+j))]}")
+        done
+
+        echo "--- Wave: ${wave[*]} ---"
+
+        # Launch all subjects in the wave
+        if [ "${Parallel}" -gt 1 ]; then
+            for Subject in "${wave[@]}"; do
+                process_subject "${Subject}" &
+            done
+            wait   # wait for entire wave to finish
+        else
+            for Subject in "${wave[@]}"; do
+                process_subject "${Subject}"
+            done
+        fi
+
+        # Archive completed subjects in this wave to external drive
+        if [ -n "${ExternalFolder}" ]; then
+            for Subject in "${wave[@]}"; do
+                if all_stages_done "${Subject}"; then
+                    archive_to_external "${Subject}"
+                else
+                    echo "  [ARCHIVE] Skipping ${Subject} — not all stages completed successfully."
+                fi
+            done
+            sync_logs_to_external
+        fi
+
+        i=$(( i + Parallel ))
     done
 fi
 
 echo "========================================"
 echo "Batch run complete. Log: ${LogFile}"
+[ -n "${ExternalFolder}" ] && sync_logs_to_external
 echo "========================================"
