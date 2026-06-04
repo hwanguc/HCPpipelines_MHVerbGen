@@ -234,7 +234,8 @@ for Subject in $Subjlist ; do
             queuing_command=("$FSLDIR/bin/fsl_sub" -q "$QUEUE")
         fi
 
-        "${queuing_command[@]}" "$HCPPIPEDIR"/fMRIVolume/GenericfMRIVolumeProcessingPipeline.sh \            --path="$StudyFolder" \
+        "${queuing_command[@]}" "$HCPPIPEDIR"/fMRIVolume/GenericfMRIVolumeProcessingPipeline.sh \
+            --path="$StudyFolder" \
             --subject="$Subject" \
             --fmriname="$fMRIName" \
             --fmritcs="$fMRITimeSeries" \
