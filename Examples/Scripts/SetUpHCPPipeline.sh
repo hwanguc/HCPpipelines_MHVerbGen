@@ -22,10 +22,20 @@ fi
 ## Edit this section: set up other environment variables
 export MSMBINDIR="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/MSMPackage"
 export PATH="${MSMBINDIR}:${PATH}"
-export LD_LIBRARY_PATH="${MSMBINDIR}/lib:/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+if [ "${COMPUTER:-home}" = "lab" ]; then
+    LOCAL_ADDON="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen_local-add-on"
+    export LD_LIBRARY_PATH="${LOCAL_ADDON}/MSMPackage/lib:/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+else
+    export LD_LIBRARY_PATH="${MSMBINDIR}/lib:/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
 
 export MATLAB_COMPILER_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/R2025a
 export FSL_FIXDIR=/home/hanwang/fsl/bin
+if [ "${COMPUTER:-home}" = "lab" ]; then
+    export PYTHON3="${HOME}/neuroimaging-hcp-pfm/bin/python3"
+else
+    export PYTHON3="${HOME}/x64py-ml/bin/python3"
+fi
 #export FSL_FIXDIR=/home/hanwang/fsl/share/fix # only needed for legacy fix, this is the default location for legacy fix
 # If a suitable version of wb_command is on your $PATH, CARET7DIR can be blank
 export CARET7DIR=/opt/workbench/bin_linux64

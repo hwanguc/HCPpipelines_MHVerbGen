@@ -60,16 +60,18 @@ get_batch_options() {
 
 get_batch_options "$@"
 
-RawDataFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/raw"
 StudyFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed"
-EventsFile="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/other/task-verbgen_events.tsv"
 EnvironmentScript="${HOME}/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen/Examples/Scripts/SetUpHCPPipeline.sh"
-
-Subjlist=$(ls "${RawDataFolder}" | grep -v '^\.' | sort | tr '\n' ' ')
 
 if [ -n "${command_line_specified_study_folder}" ]; then
     StudyFolder="${command_line_specified_study_folder}"
 fi
+
+DataRoot="$(dirname "${StudyFolder}")"
+RawDataFolder="${DataRoot}/raw"
+EventsFile="${DataRoot}/other/task-verbgen_events.tsv"
+
+Subjlist=$(ls "${RawDataFolder}" | grep -v '^\.' | sort | tr '\n' ' ')
 
 if [ -n "${command_line_specified_subj}" ]; then
     Subjlist="${command_line_specified_subj}"
@@ -151,12 +153,12 @@ for Subject in $Subjlist; do
     mkdir -p "${OutputDir}"
 
     # Step 1: Identify task-driven signal components for this subject
-    TASK_COMPS=$(python3 "${ScriptsDir}/identify_task_components.py" \
+    TASK_COMPS=$(${PYTHON3} "${ScriptsDir}/identify_task_components.py" \
         "${IcaDir}" "${EventsFile}" --tr="${TR}" --components-only)
 
     if [ -n "${TASK_COMPS}" ]; then
         echo "  Task-driven component(s) found: ${TASK_COMPS} — regressing out..."
-        python3 "${ScriptsDir}/regress_task_components.py" \
+        ${PYTHON3} "${ScriptsDir}/regress_task_components.py" \
             "${IcaDir}" "${CleanedFile}" "${RegressedFile}" ${TASK_COMPS}
         if [ $? -ne 0 ]; then
             echo "  ERROR: regress_task_components.py failed for ${Subject}"

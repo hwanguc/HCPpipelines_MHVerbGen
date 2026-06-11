@@ -31,14 +31,16 @@
 #   --ForceOverwrite                  Re-run stages already marked DONE in the log
 #   --StudyFolder=PATH                Override default processed data folder
 #   --DryRun                          Print commands without executing them
+#   --Computer=home|lab               Machine profile (default: home)
+#                                     home: ~/Documents/Data/ucl/gos_ich/verb_gen_krishnan/...
+#                                     lab:  ~/Documents/Data/verb_gen_krishnan/...
 
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
 SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
-SUBSAMPLE_CSV="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/behavioural_scq_sdq/dat_verbgen_scqsdq_subsample.csv"
-StudyFolder="${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed"
 EnvironmentScript="${SCRIPTS_DIR}/SetUpHCPPipeline.sh"
+Computer="home"
 
 ALL_STAGES=("PreFreeSurfer" "FreeSurfer" "PostFreeSurfer" "fMRIVolume" "fMRISurface" "IcaFix" "RestExtraction")
 
@@ -75,12 +77,34 @@ for arg in "$@"; do
         --MoveToExternal=*)
             ExternalFolder="${arg#*=}"
             ;;
+        --Computer=*)
+            Computer="${arg#*=}"
+            ;;
         *)
             echo "ERROR: Unrecognized option: ${arg}"
             exit 1
             ;;
     esac
 done
+
+# ---------------------------------------------------------------------------
+# Set machine-specific paths based on --Computer
+# ---------------------------------------------------------------------------
+case "${Computer}" in
+    home)
+        StudyFolder="${StudyFolder:-${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed}"
+        SUBSAMPLE_CSV="${SUBSAMPLE_CSV:-${HOME}/Documents/Data/ucl/gos_ich/verb_gen_krishnan/behavioural_scq_sdq/dat_verbgen_scqsdq_subsample.csv}"
+        ;;
+    lab)
+        StudyFolder="${StudyFolder:-${HOME}/Documents/Data/verb_gen_krishnan/processed}"
+        SUBSAMPLE_CSV="${SUBSAMPLE_CSV:-${HOME}/Documents/Data/verb_gen_krishnan/behavioural_scq_sdq/dat_verbgen_scqsdq_subsample.csv}"
+        ;;
+    *)
+        echo "ERROR: Unknown --Computer value '${Computer}'. Valid: home, lab"
+        exit 1
+        ;;
+esac
+export COMPUTER="${Computer}"
 
 # ---------------------------------------------------------------------------
 # Build subject list from CSV if not specified on command line
@@ -348,6 +372,7 @@ all_stages_done() {
 # ---------------------------------------------------------------------------
 echo "========================================"
 echo "HCP Full Pipeline Batch Run"
+echo "Computer : ${Computer}"
 echo "Subjects : ${Subjlist}"
 echo "Stages   : ${StageList[*]}"
 echo "Parallel : ${Parallel}"
