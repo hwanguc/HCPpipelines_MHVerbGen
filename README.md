@@ -6,7 +6,7 @@ Scripts for running the HCP Minimal Preprocessing Pipeline on the Krishnan verb 
 
 ---
 
-## Quick Start
+## Quick Start Usage:
 
 ```bash
 cd ~/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen
@@ -27,11 +27,11 @@ Master script that runs all pipeline stages for one or more subjects. Stages alr
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--Computer=home\|lab` | `home` | Machine profile. Sets `StudyFolder`, `SUBSAMPLE_CSV`, and Python interpreter paths for the specified machine. Use `--Computer=lab` on the lab workstation (TR-PH-234-10). |
+| `--Computer=home\|lab` | `home` | Machine profile. Sets `StudyFolder`, `SUBSAMPLE_CSV`, and Python interpreter paths for the specified machine. Use `--Computer=lab` on the lab workstation at Roe PsyLab. |
 | `--Subjects="sub-A sub-B"` | all 44 from CSV | Space-separated list of subject IDs to process. If omitted, reads all subjects from the subsample CSV. |
-| `--Parallel=N` | `1` | Number of subjects to process concurrently. `--Parallel=4` is stable on the home machine (Ryzen 7 5800X, 32 GB RAM). `--Parallel=2` recommended for initial runs on the lab machine (Core Ultra 9 285, 32 GB RAM). |
+| `--Parallel=N` | `1` | Number of subjects to process concurrently. `--Parallel=4` was tested to run stable on the home workstation (Ryzen 7 5800X, 32 GB RAM). `--Parallel=5` recommended for runs on the lab machine (Core Ultra 9 285, 32 GB RAM). |
 | `--Stages="StageA StageB"` | `all` | Run only specific stages. Valid values: `PreFreeSurfer FreeSurfer PostFreeSurfer fMRIVolume fMRISurface IcaFix RestExtraction`. |
-| `--MoveToExternal=PATH` | off | After each parallel wave completes, archive processed outputs to `PATH` (resolving symlinks for exFAT compatibility) and remove them from the internal drive. Switches dispatch to batched (wave) mode. Use on the home machine when the external drive is mounted. Do **not** use on the lab machine. |
+| `--MoveToExternal=PATH` | off | After each parallel wave completes, archive processed outputs to `PATH` (resolving symlinks for exFAT compatibility) and remove them from the internal drive. Switches dispatch to batched (wave) mode. Use on the home machine when the external drive is mounted. Do **not** use on the lab machine **yet**. |
 | `--StudyFolder=PATH` | machine-specific | Override the default processed data folder. |
 | `--ForceOverwrite` | off | Re-run stages already marked `DONE` in the log. |
 | `--DryRun` | off | Print all commands that would be run without executing them. Always do a dry run first when testing new setups. |
@@ -87,9 +87,17 @@ bash Examples/Scripts/RunFullPipelineBatch.sh \
 ## Monitoring progress
 
 ### Log file (TSV)
+
+On Home workstation:
 ```
-~/Documents/Data/[ucl/gos_ich/]verb_gen_krishnan/processed/logs/pipeline_progress.log
+~/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed/logs/pipeline_progress.log
 ```
+
+On Lab workstation:
+```
+~/Documents/Data/verb_gen_krishnan/processed/logs/pipeline_progress.log
+```
+
 Each completed or failed stage is written as a tab-separated row: `Subject`, `Stage`, `Timestamp`, `Status`.
 
 ### Timing summary script
