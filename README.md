@@ -6,7 +6,7 @@ Scripts for running the HCP Minimal Preprocessing Pipeline on the Krishnan verb 
 
 ---
 
-## Quick Start Usage:
+## Quick Start Guide:
 
 ```bash
 cd ~/Apps/Programming/matlab-proj/HCPpipelines_MHVerbGen
@@ -116,12 +116,12 @@ RUN_START="2026-06-11T17:02:50" bash \
 | # | Stage | Script | Typical duration |
 |---|-------|--------|-----------------|
 | 1 | PreFreeSurfer | `PreFreeSurferPipelineBatch.sh` | ~20–26 min |
-| 2 | FreeSurfer | `FreeSurferPipelineBatch.sh` | ~3.5–5 h (requires FreeSurfer 6.0.0) |
+| 2 | FreeSurfer | `FreeSurferPipelineBatch.sh` | ~3.5–5 h (strictly requires FreeSurfer 6.0.0) |
 | 3 | PostFreeSurfer | `PostFreeSurferPipelineBatch.sh` | ~50–80 min |
 | 4 | fMRIVolume | `GenericfMRIVolumeProcessingPipelineBatch.sh` | ~31 min |
 | 5 | fMRISurface | `GenericfMRISurfaceProcessingPipelineBatch.sh` | ~4–9 min |
 | 6 | IcaFix | `IcaFixProcessingBatch.sh` | ~30–54 min |
-| 7 | RestExtraction | `ExtractRestBlocksBatch.sh` | ~12 min |
+| 7 | RestExtraction | `ExtractRestBlocksBatch.sh` | ~3-6 min |
 
 Total per subject: ~7–10 h depending on FreeSurfer complexity.
 
@@ -138,7 +138,7 @@ The RestExtraction stage identifies task-correlated ICA components, regresses th
 | FreeSurfer | 6.0.0 | via `.bashrc` | `/usr/local/freesurfer/6.0.0` |
 | Connectome Workbench | any | `/opt/workbench/bin_linux64` | `/opt/workbench/bin_linux64` |
 | MATLAB Runtime | R2025a + v93 | `/usr/local/MATLAB/MATLAB_Runtime/` | `/usr/local/MATLAB/MATLAB_Runtime/` |
-| tcsh | any | system | `sudo apt-get install tcsh` |
+| tcsh | any | `/usr/bin/tcsh` | `/usr/bin/tcsh` |
 | Python venv | 3.x + nibabel/numpy/scipy | `~/x64py-ml` | `~/neuroimaging-hcp-pfm` |
 
 ---
