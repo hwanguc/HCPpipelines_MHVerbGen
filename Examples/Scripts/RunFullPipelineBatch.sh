@@ -7,7 +7,7 @@
 #
 # Runs all pipeline stages in sequence for each subject:
 #   PreFreeSurfer → FreeSurfer → PostFreeSurfer →
-#   fMRIVolume → fMRISurface → IcaFix → RestExtraction
+#   fMRIVolume → fMRISurface → IcaFix → RestExtraction → FullExtraction
 #
 # Progress is logged to ${StudyFolder}/logs/pipeline_progress.log (TSV).
 # Stages already marked DONE in the log are skipped unless --ForceOverwrite is set.
@@ -22,6 +22,7 @@
 #   --Stages="all"                    Stages to run (default: all)
 #                                     Valid: PreFreeSurfer FreeSurfer PostFreeSurfer
 #                                            fMRIVolume fMRISurface IcaFix RestExtraction
+#                                            FullExtraction
 #   --Parallel=N                      Number of subjects to process concurrently (default: 1)
 #   --MoveToExternal=PATH             After each parallel batch completes, copy processed
 #                                     outputs to PATH (resolving all symlinks for exFAT
@@ -42,7 +43,7 @@ SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 EnvironmentScript="${SCRIPTS_DIR}/SetUpHCPPipeline.sh"
 Computer="home"
 
-ALL_STAGES=("PreFreeSurfer" "FreeSurfer" "PostFreeSurfer" "fMRIVolume" "fMRISurface" "IcaFix" "RestExtraction")
+ALL_STAGES=("PreFreeSurfer" "FreeSurfer" "PostFreeSurfer" "fMRIVolume" "fMRISurface" "IcaFix" "RestExtraction" "FullExtraction")
 
 Subjlist=""
 Stages="all"
@@ -315,6 +316,10 @@ process_subject() {
                 ;;
             RestExtraction)
                 run_stage_script "ExtractRestBlocksBatch.sh" "${Subject}"
+                rc=$?
+                ;;
+            FullExtraction)
+                run_stage_script "TrimInitialVolumesBatch.sh" "${Subject}"
                 rc=$?
                 ;;
         esac
